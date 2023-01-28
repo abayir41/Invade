@@ -37,13 +37,17 @@ public class GameManager : MonoBehaviour
     public List<GameObject> startUI;
     public List<GameObject> endUI;
     public List<GameObject> gameUI;
-
+    public GameObject evacuateText;
+    public TextMeshProUGUI EvacuateTextMeshProUGUI;
+    
     public List<GameObject> nukessss;
+    public GameObject FirstTimeText;
+    
+    public bool FirstTime => PlayerPrefs.GetInt("First") != 1;
 
     private void Awake()
     {
         Instance = this;
-        
         Car.SomethingChanged += SomethingChanged;
     }
 
@@ -57,21 +61,44 @@ public class GameManager : MonoBehaviour
         saglamArabalar.text = saglamlar+ "";
         patlamisArabalar.text = bozuklar + "";
     }
+    
+
 
     private IEnumerator Startasd()
     {
-        yield return new WaitForSeconds(4);
+        yield return new WaitForSeconds(2);
+        
+        evacuateText.SetActive(true);
+        EvacuateTextMeshProUGUI.DOFade(0, 0.3f).SetEase(Ease.InCirc).SetLoops(-1, LoopType.Yoyo);
+        
+        yield return new WaitForSeconds(2);
+        
         
         Source.DOFade(0, 3);
         cembo.DOFade(1, 3);
         
         yield return new WaitForSeconds(1);
 
+        evacuateText.SetActive(false);
         Camera.main.transform.DOMove(cameraOriginalPos.position, 1f);
         Camera.main.transform.DORotate(cameraOriginalPos.eulerAngles, 1f).OnComplete(() => Camera.main.transform.parent = cameraOriginalPos);
         
         yield return new WaitForSeconds(1f);
 
+        if (!FirstTime)
+        {
+            continueGame();
+        }
+        else
+        {
+            FirstTimeText.SetActive(true);
+            PlayerPrefs.SetInt("First", 1);
+        }
+    }
+
+    public void continueGame()
+    {
+        FirstTimeText.SetActive(false);
         gameStarted = true;   
         gameUI.ForEach(o => o.SetActive(true));
         StartCoroutine(RandomSpawn());
