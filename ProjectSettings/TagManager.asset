@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Fire
+  - wall
+  - boom
+  - Nuke
+  - Tarama
+  - Health
   layers:
   - Default
   - TransparentFX

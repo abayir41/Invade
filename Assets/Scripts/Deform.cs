@@ -6,49 +6,44 @@ using Random = UnityEngine.Random;
 
 public class Deform : MonoBehaviour
 {
-    [Range(0, 0.3f)]
-    public float deformRadius = 0.2f;
-    [Range(0, 0.3f)]
+    
+    public float maxDeformRadius = 0.2f;
     public float maxDeform = 0.1f;
-    [Range(0, 0.1f)]
     public float damageMultiplier = 1;
-    [Range(0, 100000)]
-    public float minDamage = 1;
-
+    
     public int maxColAmount;
+
+    public float distanceMultiplier;
 
     private int _colCounter;
  
     public AudioClip[] collisionSounds;
  
     private MeshFilter filter;
-    private MeshCollider coll;
+    //private MeshCollider coll;
     private Vector3[] meshVerticies;
+    public AudioClip collisionClip;
  
     void Start()
     {
         filter = GetComponent<MeshFilter>();
  
-        if (GetComponent<MeshCollider>())
-            coll = GetComponent<MeshCollider>();
+        //if (GetComponent<MeshCollider>())
+            //coll = GetComponent<MeshCollider>();
  
         meshVerticies = filter.mesh.vertices;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
+        
         if (_colCounter >= maxColAmount) return;
 
         _colCounter++;
 
-        float collisionPower = collision.impulse.magnitude;
-
         
-        if (!(collisionPower > minDamage)) return;
-        
-        if (collisionSounds.Length > 0)
-            AudioSource.PlayClipAtPoint(collisionSounds[Random.Range(0, collisionSounds.Length)], transform.position, 0.5f);
-        
+        Camera.main.GetComponent<AudioSource>().PlayOneShot(collisionClip);
+            
         foreach (var point in collision.contacts)
         {
             for (var i = 0; i < meshVerticies.Length; i++)
@@ -57,11 +52,13 @@ public class Deform : MonoBehaviour
                 var pointPosition = transform.InverseTransformPoint(point.point);
                 var distanceFromCollision = Vector3.Distance(vertexPosition, pointPosition);
 
-                if (!(distanceFromCollision < deformRadius)) continue; // If within collision radius and within max deform
+                //Debug.Log("Distance: "+distanceFromCollision);
                 
-                var xDeform = point.normal.x * damageMultiplier / distanceFromCollision;
-                var yDeform = point.normal.y * damageMultiplier / distanceFromCollision;
-                var zDeform = point.normal.z * damageMultiplier / distanceFromCollision;
+                if (distanceFromCollision >= maxDeformRadius) continue; // If within collision radius and within max deform
+                
+                var xDeform = point.normal.x * damageMultiplier * distanceMultiplier / distanceFromCollision;
+                var yDeform = point.normal.y * damageMultiplier * distanceMultiplier / distanceFromCollision;
+                var zDeform = point.normal.z * damageMultiplier * distanceMultiplier / distanceFromCollision;
 
                 xDeform = xDeform switch
                 {
@@ -85,7 +82,7 @@ public class Deform : MonoBehaviour
                 };
 
                 var deform = new Vector3(xDeform, yDeform, zDeform);
-                Debug.Log(deform);
+                //Debug.Log("Deform: " + deform);
                 
                 var fixedDeform = transform.InverseTransformDirection(deform);
 
@@ -100,7 +97,7 @@ public class Deform : MonoBehaviour
     {
         var mesh = filter.mesh;
         mesh.vertices = meshVerticies;
-        coll.sharedMesh = mesh;
+        //coll.sharedMesh = mesh;
     }
     
     
