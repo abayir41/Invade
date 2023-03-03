@@ -5,7 +5,7 @@ This game made in 48 hours in Bogazici Mini Jam. That was fun
 <img src="image_001_0049.jpg" width="200" height="375">  <img src="image_001_0099.jpg" width="200" height="375">    <img src="image_001_0302.jpg" width="200" height="375">
 
 ## Here The Gameplay
-<img src="ezgif.com-video-to-gif (2)" width="200" height="375">
+<img src="gameplay.gif" width="200" height="375">
 
 ## Here The itch.io link
 itch.io: <https://ahmetbayir.itch.io/invadeeeee>
